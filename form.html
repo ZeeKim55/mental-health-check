@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แบบประเมินสุขภาพจิต (PHQ-9)</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+  <style>
+    #resultBox {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      background-color: #e8f5e9;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">กรมอนามัย</div>
+    <h1>แบบประเมินสุขภาพจิต PHQ-9</h1>
+  </header>
+
+  <main>
+    <form class="assessment-form" onsubmit="return calculateScore(event)">
+      <div id="questions">
+        <!-- PHQ-9 questions -->
+      </div>
+      <button type="submit">ประเมินผล</button>
+    </form>
+
+    <div id="resultBox">
+      <h2>ผลการประเมิน</h2>
+      <p id="scoreResult"></p>
+      <p id="recommendation"></p>
+    </div>
+  </main>
+
+  <footer>
+    © กรมอนามัย กระทรวงสาธารณสุข | ข้อมูลไม่มีการจัดเก็บ
+  </footer>
+
+  <script>
+    const questions = [
+      "เบื่อ ไม่สนใจทำอะไร",
+      "รู้สึกหดหู่ ซึมเศร้า สิ้นหวัง",
+      "หลับยาก หรือหลับมากเกินไป",
+      "รู้สึกเหนื่อยง่าย ไม่มีแรง",
+      "เบื่ออาหาร หรือกินมากเกินไป",
+      "รู้สึกไม่ดีกับตัวเอง หรือคิดว่าตัวเองล้มเหลว",
+      "มีปัญหาในการมีสมาธิ",
+      "เคลื่อนไหวช้าลง หรือกระสับกระส่าย",
+      "คิดทำร้ายตัวเองหรืออยากตาย"
+    ];
+
+    const choices = [
+      { text: "ไม่มีเลย", score: 0 },
+      { text: "เป็นบางวัน", score: 1 },
+      { text: "บ่อยครั้ง", score: 2 },
+      { text: "เกือบทุกวัน", score: 3 }
+    ];
+
+    const container = document.getElementById('questions');
+    questions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.className = "question";
+      div.innerHTML = `
+        <label for="q${i+1}">${i+1}. ${q}</label>
+        <select id="q${i+1}">
+          ${choices.map(c => `<option value="${c.score}">${c.text}</option>`).join('')}
+        </select>
+      `;
+      container.appendChild(div);
+    });
+
+    function calculateScore(e) {
+      e.preventDefault();
+      let total = 0;
+      for (let i = 1; i <= 9; i++) {
+        total += parseInt(document.getElementById("q"+i).value);
+      }
+
+      let level = "";
+      let recommend = "";
+      if (total <= 4) {
+        level = "ไม่มีภาวะซึมเศร้า";
+        recommend = "ดูแลสุขภาพใจต่อไป คุณยังอยู่ในเกณฑ์ปกติ";
+      } else if (total <= 9) {
+        level = "ภาวะซึมเศร้าเล็กน้อย";
+        recommend = "ควรติดตามอารมณ์ตัวเองสม่ำเสมอ และหาเวลาพักผ่อน";
+      } else if (total <= 14) {
+        level = "ภาวะซึมเศร้าปานกลาง";
+        recommend = "ควรปรึกษานักจิตวิทยาหรือแพทย์";
+      } else {
+        level = "ภาวะซึมเศร้ารุนแรง";
+        recommend = "ควรพบแพทย์ผู้เชี่ยวชาญโดยเร็ว";
+      }
+
+      document.getElementById("scoreResult").innerText = `คะแนนรวมของคุณ: ${total} คะแนน (${level})`;
+      document.getElementById("recommendation").innerText = recommend;
+      document.getElementById("resultBox").style.display = "block";
+      return false;
+    }
+  </script>
+</body>
+</html>
